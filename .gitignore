@@ -1,2 +1,5 @@
 #ignore compiled files
-build/
+bin/
+
+#ignore documentation
+doc/
