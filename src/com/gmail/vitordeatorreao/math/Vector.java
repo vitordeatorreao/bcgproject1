@@ -185,6 +185,18 @@ public class Vector {
 	}
 	
 	/**
+	 * Returns a <code>Matrix</code> which represents this vector.
+	 * @return the <code>Vector</code> in <code>Matrix</code> form.
+	 */
+	public Matrix toMatrix() {
+		double[] ds = new double[getDimension()];
+		for (int i = 0; i < getDimension(); i++) {
+			ds[i] = this.get(i);
+		}
+		return new Matrix(ds, getDimension(), 1);
+	}
+	
+	/**
 	 * Returns the <code>String</code> representing the <code>Vector</code>
 	 * @return a <code>String</code> that represents the <code>Vector</code>
 	 */

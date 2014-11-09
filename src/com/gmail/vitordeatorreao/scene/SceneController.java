@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+
 import com.gmail.vitordeatorreao.math.Vector;
 import com.gmail.vitordeatorreao.math.Vertex;
 
@@ -24,8 +25,16 @@ import com.gmail.vitordeatorreao.math.Vertex;
  */
 public class SceneController {
 	
+	/**
+	 * Singleton Pattern
+	 */
 	private static SceneController instance;
 	
+	/**
+	 * Part of Singleton Pattern. This method is the only 
+	 * way to get an instance of this class.
+	 * @return the unique instance of <code>SceneController</code>
+	 */
 	public static SceneController getInstance() {
 		if (instance == null) {
 			instance = new SceneController();
@@ -35,6 +44,9 @@ public class SceneController {
 	
 	private Scene scene;
 	
+	/**
+	 * This private constructor is part of the Singleton Pattern.
+	 */
 	private SceneController() {
 		this.scene = new Scene();
 	}
@@ -43,6 +55,13 @@ public class SceneController {
 		return this.scene;
 	}
 	
+	/**
+	 * Loads scene elements from .byu files.
+	 * @param	file The file to read the scene elements from
+	 * @throws	IOException In case there is a problem reading the file
+	 * @throws	NonConformantSceneFile In case the file doesn't respect 
+	 * 			the .byu standard
+	 */
 	public void loadScene(File file) throws IOException, 
 										NonConformantSceneFile {
 		BufferedReader bfr = new BufferedReader(new FileReader(file));
@@ -55,6 +74,9 @@ public class SceneController {
 			String[] args = line.split(" ");
 			if (args.length == 2) {
 				//Reading an object
+				//Clean the previously loaded object
+				this.scene.cleanTriangles();
+				//Load the new
 				int numVertices;
 				int numTriangles;
 				try {
@@ -221,15 +243,19 @@ public class SceneController {
 							+ "precision value, but found \""+line+"\"");
 				}
 				this.scene.setCamera(new Camera(C, N, V, d, hx, hy));
+				System.out.println("Camera = "+scene.getCamera().toString());
 			}
 		}
 		bfr.close();
 	}
 	
+	/**
+	 * This function is only used for testing.
+	 */
 	public static void main(String[] args) {
 		SceneController sc = SceneController.getInstance();
 		try {
-			sc.loadScene(new File("vaso.byu"));
+			sc.loadScene(new File("vaso.byu")); //Make sure you have one
 			System.out.println(sc.getScene().toString());
 			System.out.println(sc.getScene().getTriangles().size());
 			System.out.println(sc.getScene().getCamera().toString());

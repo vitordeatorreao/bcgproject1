@@ -85,6 +85,13 @@ public class Scene {
 		return triangles;
 	}
 	
+	/**
+	 * Erases the list of Triangles.
+	 */
+	public void cleanTriangles() {
+		this.triangles = new ArrayList<Triangle>();
+	}
+	
 	@Override
 	public String toString() {
 		String s = "Scene = {";
