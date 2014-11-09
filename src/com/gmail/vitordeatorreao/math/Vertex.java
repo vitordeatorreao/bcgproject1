@@ -124,10 +124,14 @@ public class Vertex {
 		result += "(";
 		int i;
 		for(i = 0; i < this.coords.length-1; i++) {
-			result += this.coords[i]+", ";
+			result += (this.coords[i]+0.0)+", ";
 		}
-		result += this.coords[i]+")";
+		result += (this.coords[i]+0.0)+")";
 		return result;
+		
+		/* We are using +0.0 when turning doubles to strings because of
+		 * the Java "Negative Zero"
+		 */
 	}
 	
 	/**

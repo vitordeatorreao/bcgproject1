@@ -96,6 +96,39 @@ public class Vector {
 		}
 		return d;
 	}
+	
+	/**
+	 * Returns a <code>Vector</code> resulting from the 
+	 * product of this <code>Vector</code> with a scalar.
+	 * @param d the scalar with which the <code>Vector</code> will be multiplied
+	 * @return the resulting <code>Vector</code>
+	 */
+	public Vector mult(double d) {
+		double[] ds = new double[this.getDimension()];
+		for (int i = 0; i < this.getDimension(); i++) {
+			ds[i] = d*this.get(i);
+		}
+		return new Vector(ds);
+	}
+	
+	/**
+	 * Return a <code>Vector</code> resulting from the 
+	 * subtraction of this <code>Vector</code> with another.
+	 * @param v the <code>Vector</code> from which this 
+	 * 			<code>Vector</code> will be subtracted.
+	 * @return The resulting <code>Vector</code>
+	 */
+	public Vector sub(Vector v) {
+		if (this.getDimension() != v.getDimension()) {
+			throw new IllegalArgumentException(
+					"You can only subtract vectors with same dimension");
+		}
+		double[] ds = new double[v.getDimension()];
+		for (int i = 0; i < v.getDimension(); i++) {
+			ds[i] = this.get(i) - v.get(i);
+		}
+		return new Vector(ds);
+	}
 
 	/**
 	 * Returns a <code>Vector<code> resulting from the vector 
@@ -160,10 +193,14 @@ public class Vector {
 		String result = "[";
 		int i;
 		for(i = 0; i < getDimension()-1; i++) {
-			result += array[i]+", ";
+			result += (array[i]+0.0)+", ";
 		}
-		result += array[i] + "]";
+		result += (array[i]+0.0) + "]";
 		return result;
+		
+		/* We are using +0.0 when turning doubles to strings because of
+		 * the Java "Negative Zero"
+		 */
 	}
 
 	/**

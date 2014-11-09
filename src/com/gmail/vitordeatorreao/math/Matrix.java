@@ -175,12 +175,16 @@ public class Matrix {
 		for(i = 0; i < this.numRows; i++) {
 			result += "\t";
 			for(j = 0; j < this.numColumns; j++) {
-				result += this.get(i, j)+"\t\t";
+				result += (this.get(i, j)+0.0)+"\t\t";
 			}
 			result += "\n";
 		}
 		result += "]";
 		return result;
+		
+		/* We are using +0.0 when turning doubles to strings because of
+		 * the Java "Negative Zero"
+		 */
 	}
 	
 	//Just for testing
