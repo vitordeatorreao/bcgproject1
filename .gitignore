@@ -6,3 +6,6 @@ doc/
 
 #ignore example files
 *.byu
+
+#ignore image files
+/*.png
