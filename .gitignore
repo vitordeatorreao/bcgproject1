@@ -3,3 +3,6 @@ bin/
 
 #ignore documentation
 doc/
+
+#ignore example files
+*.byu
