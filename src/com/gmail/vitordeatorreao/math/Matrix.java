@@ -124,6 +124,20 @@ public class Matrix {
 	}
 	
 	/**
+	 * Multiplies a Vector by a Matrix. Use this for transformations.
+	 * @param v The <code>Vector</code> to multiply by this <code>Matrix</code>
+	 * @return The resulting <code>Vector</code>
+	 */
+	public Vector mult(Vector v) {
+		double[] ds = new double[v.getDimension()];
+		Matrix m = this.mult(v.toMatrix());
+		for (int i = 0; i < m.getNumRows(); i++) {
+			ds[i] = m.get(i, 0);
+		}
+		return new Vector(ds);
+	}
+	
+	/**
 	 * Transposes this <code>Matrix</code>.
 	 * @return The resulting transposed <code>Matrix</code>.
 	 */
