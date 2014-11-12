@@ -3,9 +3,11 @@ package com.gmail.vitordeatorreao.screen;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -14,6 +16,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 
 import com.gmail.vitordeatorreao.scene.NonConformantSceneFile;
 import com.gmail.vitordeatorreao.scene.SceneController;
@@ -85,20 +88,31 @@ public class SwingPaint {
         
         //Create menu bar
         JMenuBar menuBar = new JMenuBar();
+        ImageIcon appIcon;
         ImageIcon openIcon;
+        ImageIcon saveIcon;
         ImageIcon exitIcon;
         try {
+        	appIcon = new ImageIcon(SwingPaint.class.getResource(
+        			"/com/gmail/vitordeatorreao/images/logo.png"));
         	openIcon = new ImageIcon(SwingPaint.class.getResource(
         			"/com/gmail/vitordeatorreao/images/open.png"));
+        	saveIcon = new ImageIcon(SwingPaint.class.getResource(
+        			"/com/gmail/vitordeatorreao/images/save.png"));
         	exitIcon = new ImageIcon(SwingPaint.class.getResource(
         			"/com/gmail/vitordeatorreao/images/exit.png"));
         } catch (Exception e){
+        	appIcon = new ImageIcon("logo.png");
         	openIcon = new ImageIcon("open.png");
+        	saveIcon = new ImageIcon("save.png");
         	exitIcon = new ImageIcon("exit.png");
         }
         
-        //Create Open File Menu Item
+        frame.setIconImage(appIcon.getImage());
+        
         JMenu file = new JMenu("File");
+        
+        //Create Open File Menu Item
         JMenuItem openMenuItem = new JMenuItem("Open", openIcon);
         openMenuItem.setToolTipText("Load objects from BYU files");
         openMenuItem.addActionListener(new ActionListener() {
@@ -123,6 +137,52 @@ public class SwingPaint {
 			}
 		});
         
+        //Create Save menu item
+        JMenuItem saveMenuItem = new JMenuItem("Save", saveIcon);
+        saveMenuItem.setToolTipText("Save view into an image file");
+        saveMenuItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser saveFile = new JFileChooser();
+				saveFile.addChoosableFileFilter(new FileFilter() {
+					
+					@Override
+					public String getDescription() {
+						return "*.png, *.PNG";
+					}
+					
+					@Override
+					public boolean accept(File arg0) {
+						if (arg0.isDirectory()) {
+							return false;
+						}
+						String filename = arg0.getName();
+						return filename.endsWith(".png") || 
+								filename.endsWith(".PNG");
+					}
+				});
+				int returnVal = saveFile.showSaveDialog(null);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = saveFile.getSelectedFile();
+					BufferedImage im = new BufferedImage(
+							paintablePanel.getWidth(), 
+							paintablePanel.getHeight(), 
+							BufferedImage.TYPE_INT_RGB);
+					paintablePanel.paint(im.getGraphics());
+					
+					try {
+						ImageIO.write(im, "png", file);
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(frame, e.getMessage(), 
+								"Error while saving file", 
+								JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				
+			}
+		});
+        
         //Create Exit program menu item
         JMenuItem exitMenuItem = new JMenuItem("Exit", exitIcon);
         exitMenuItem.setToolTipText("Exit application");
@@ -137,6 +197,7 @@ public class SwingPaint {
         
         //Add menu items to Menu
         file.add(openMenuItem);
+        file.add(saveMenuItem);
         file.add(exitMenuItem);
         
         //Add menu to menu bar

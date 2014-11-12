@@ -9,3 +9,4 @@ doc/
 
 #ignore image files
 /*.png
+/*.xcf
