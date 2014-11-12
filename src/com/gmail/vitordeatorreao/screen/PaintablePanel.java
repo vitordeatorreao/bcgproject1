@@ -11,6 +11,7 @@ import com.gmail.vitordeatorreao.math.Vertex;
 import com.gmail.vitordeatorreao.scene.Scene;
 import com.gmail.vitordeatorreao.scene.SceneController;
 import com.gmail.vitordeatorreao.scene.Triangle;
+import com.gmail.vitordeatorreao.utils.QuickSortVertices;
 
 /**
  * This class implements a JPanel that will create a 
@@ -51,7 +52,7 @@ public class PaintablePanel extends JPanel {
 		Scene scene = SceneController.getInstance().getScene();
 		
 		for (Triangle t : scene.getTriangles()) {
-			int[][] vertices = new int[2][3];
+			int[][] vertices = new int[3][2];
 			// ^- the 3 vertices in screen coordinates
 			
 			for (int k = 0; k < t.getEdges().length; k++) {
@@ -87,23 +88,59 @@ public class PaintablePanel extends JPanel {
 				j = ((Double) Math.floor(aux)).intValue();
 				
 				//Now, fill the vertices array
-				vertices[0][k] = i;
-				vertices[1][k] = j;
+				vertices[k][0] = i;
+				vertices[k][1] = j;
 			}
 			
 			//Now we have for 3 vertices in its screen coordinates
 			for (int i = 0; i < 3; i++) {
-				drawPixel(g, vertices[0][i], vertices[1][i], Color.white);
+				drawPixel(g, vertices[i][0], vertices[i][1], Color.white);
 				
 			}
 			
 			//Now draw edges
 			for (int i = 0; i < 3; i++) {
 				drawLine(g, 
-						vertices[0][i], vertices[1][i], 
-						vertices[0][(i+1)%3], vertices[1][(i+1)%3], 
+						vertices[i][0], vertices[i][1], 
+						vertices[(i+1)%3][0], vertices[(i+1)%3][1], 
 						Color.white);
 			}
+			
+			//Now draw the entire triangle
+			QuickSortVertices qsv = new QuickSortVertices();
+			qsv.sort(vertices);
+			
+			if (vertices[1][1] == vertices[2][1]) {
+				//Case of bottom flat triangle
+				fillBottomFlatTriangle(g, 
+						vertices[0], vertices[1], vertices[2], 
+						Color.white);
+				
+			} else if (vertices[0][1] == vertices[1][1]) {
+				//Case of top flat triangle
+				fillTopFlatTriangle(g, 
+						vertices[0], vertices[1], vertices[2], 
+						Color.white);
+				
+			} else {
+				//General case
+				int[] vertice4 = new int[2];
+				vertice4[0] = (int) (vertices[0][0] + 
+					( (
+							(double) (vertices[1][1] - vertices[0][1]) / 
+							(double) (vertices[2][1] - vertices[0][1])
+					) * (vertices[2][0] - vertices[0][0]) ));
+				vertice4[1] = vertices[1][1];
+				
+				fillBottomFlatTriangle(g, 
+						vertices[0], vertices[1], vertice4, 
+						Color.white);
+				
+				fillTopFlatTriangle(g,
+						vertices[1], vertice4, vertices[2], 
+						Color.white);
+			}
+			
 		}
 		
 	}
@@ -170,6 +207,80 @@ public class PaintablePanel extends JPanel {
 		}
 	}
 
+	/**
+	 * Paints a special case of a bottom-flat triangle.
+	 * @param g a <code>Graphics</code> instance
+	 * @param v1 Top vertex of the triangle
+	 * @param v2 One of the bottom vertices of the triangle
+	 * @param v3 The other bottom vertex of the triangle
+	 * @param c a <code>Color</code> to paint the triangle
+	 */
+	public void fillBottomFlatTriangle(Graphics g, 
+					int[] v1, int[] v2, int[] v3, Color c) {
+		
+		double invslope1 =	((double) (v2[0] - v1[0])) / 
+							((double) (v2[1] - v1[1]));
+		double invslope2 =	((double) (v3[0] - v1[0])) / 
+							((double) (v3[1] - v1[1]));
+		
+		double curx1 = v1[0];
+		double curx2 = v1[0];
+		
+		for (int scanlineY = v1[1]; scanlineY <= v2[1]; scanlineY++) {
+			
+			int xMin = Math.min((int) curx1, (int) curx2);
+			int xMax = Math.max((int) curx1, (int) curx2);
+			for (int x = xMin; x <= xMax; x++) {
+				drawPixel(g, x, scanlineY, c);
+			}
+			
+			curx1 += invslope1;
+			curx2 += invslope2;
+			
+		}
+		
+	}
+	
+	/**
+	 * Paints a special case of a top-flat triangle.
+	 * @param g a <code>Graphics</code> instance
+	 * @param v1 Bottom vertex of the triangle
+	 * @param v2 One of the top vertices of the triangle
+	 * @param v3 The other top vertex of the triangle
+	 * @param c a <code>Color</code> to paint the triangle
+	 */
+	public void fillTopFlatTriangle(Graphics g, 
+			int[] v1, int[] v2, int v3[], Color c) {
+		
+		double invslope1 =	((double) (v1[0] - v3[0])) / 
+							((double) (v1[1] - v3[1]));
+		double invslope2 =	((double) (v2[0] - v3[0])) / 
+							((double) (v2[1] - v3[1]));
+		
+		double curx1 = v3[0];
+		double curx2 = v3[0];
+		
+		for (int scanlineY = v3[1]; scanlineY > v1[1]; scanlineY--) {
+			
+			int xMin = Math.min((int) curx1, (int) curx2);
+			int xMax = Math.max((int) curx1, (int) curx2);
+			for (int x = xMin; x <= xMax; x++) {
+				drawPixel(g, x, scanlineY, c);
+			}
+			
+			curx1 -= invslope1;
+			curx2 -= invslope2;
+		}
+		
+	}
+	
+	/**
+	 * Function to evaluate the signal of an integer.
+	 * @param i The integer being evaluated
+	 * @return	<code>-1</code> if the integer is less than zero;
+	 * 			<code>0</code> if the integer is zero;
+	 * 			<code>1</code> if the integer is grater than zero.
+	 */
 	private int signum(int i) {
 		if (i < 0) {
 			return -1;
