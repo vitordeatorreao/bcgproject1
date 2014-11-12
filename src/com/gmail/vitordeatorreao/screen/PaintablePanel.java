@@ -51,7 +51,6 @@ public class PaintablePanel extends JPanel {
 		
 		Scene scene = SceneController.getInstance().getScene();
 		
-		int count = 0;
 		for (Triangle t : scene.getTriangles()) {
 			int[][] vertices = new int[3][2];
 			// ^- the 3 vertices in screen coordinates
@@ -93,56 +92,62 @@ public class PaintablePanel extends JPanel {
 				vertices[k][1] = j;
 			}
 			
-			//Now we have for 3 vertices in its screen coordinates
-			for (int i = 0; i < 3; i++) {
-				drawPixel(g, vertices[i][0], vertices[i][1], Color.white);
-				
+			if (SwingPaint.getShowVertices() && 
+					(!SwingPaint.getShowEdges() || 
+							!SwingPaint.getShowFaces())
+				) {
+				//Now we have for 3 vertices in its screen coordinates
+				for (int i = 0; i < 3; i++) {
+					drawPixel(g, vertices[i][0], vertices[i][1], Color.white);
+					
+				}
 			}
 			
-			//Now draw edges
-			for (int i = 0; i < 3; i++) {
-				drawLine(g, 
-						vertices[i][0], vertices[i][1], 
-						vertices[(i+1)%3][0], vertices[(i+1)%3][1], 
-						Color.white);
+			if (SwingPaint.getShowEdges() && !SwingPaint.getShowFaces()) {
+				//Now draw edges
+				for (int i = 0; i < 3; i++) {
+					drawLine(g, 
+							vertices[i][0], vertices[i][1], 
+							vertices[(i+1)%3][0], vertices[(i+1)%3][1], 
+							Color.white);
+				}
 			}
 			
-			//Now draw the entire triangle
-			QuickSortVertices qsv = new QuickSortVertices();
-			qsv.sort(vertices);
-			
-			count++;
-			System.out.println("Chegou em "+count+"/"+scene.getTriangles().size());
-			
-			if (vertices[1][1] == vertices[2][1]) {
-				//Case of bottom flat triangle
-				fillBottomFlatTriangle(g, 
-						vertices[0], vertices[1], vertices[2], 
-						Color.white);
-				
-			} else if (vertices[0][1] == vertices[1][1]) {
-				//Case of top flat triangle
-				fillTopFlatTriangle(g, 
-						vertices[0], vertices[1], vertices[2], 
-						Color.white);
-				
-			} else {
-				//General case
-				int[] vertice4 = new int[2];
-				vertice4[0] = (int) (vertices[0][0] + 
-					( (
-							(double) (vertices[1][1] - vertices[0][1]) / 
-							(double) (vertices[2][1] - vertices[0][1])
-					) * (vertices[2][0] - vertices[0][0]) ));
-				vertice4[1] = vertices[1][1];
-				
-				fillBottomFlatTriangle(g, 
-						vertices[0], vertices[1], vertice4, 
-						Color.white);
-				
-				fillTopFlatTriangle(g,
-						vertices[1], vertice4, vertices[2], 
-						Color.white);
+			if (SwingPaint.getShowFaces()) {
+				//Now draw the entire triangle
+				QuickSortVertices qsv = new QuickSortVertices();
+				qsv.sort(vertices);
+								
+				if (vertices[1][1] == vertices[2][1]) {
+					//Case of bottom flat triangle
+					fillBottomFlatTriangle(g, 
+							vertices[0], vertices[1], vertices[2], 
+							Color.white);
+					
+				} else if (vertices[0][1] == vertices[1][1]) {
+					//Case of top flat triangle
+					fillTopFlatTriangle(g, 
+							vertices[0], vertices[1], vertices[2], 
+							Color.white);
+					
+				} else {
+					//General case
+					int[] vertice4 = new int[2];
+					vertice4[0] = (int) (vertices[0][0] + 
+						( (
+								(double) (vertices[1][1] - vertices[0][1]) / 
+								(double) (vertices[2][1] - vertices[0][1])
+						) * (vertices[2][0] - vertices[0][0]) ));
+					vertice4[1] = vertices[1][1];
+					
+					fillBottomFlatTriangle(g, 
+							vertices[0], vertices[1], vertice4, 
+							Color.white);
+					
+					fillTopFlatTriangle(g,
+							vertices[1], vertice4, vertices[2], 
+							Color.white);
+				}
 			}
 			
 		}

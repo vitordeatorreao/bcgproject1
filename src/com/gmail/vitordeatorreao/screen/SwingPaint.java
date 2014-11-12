@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -41,6 +42,8 @@ public class SwingPaint {
 	
 	private static JFrame frame;
 	private static PaintablePanel paintablePanel;
+	
+	private static boolean showVertices, showEdges, showFaces;
 
 	/**
 	 * The main loop of the program.
@@ -200,8 +203,48 @@ public class SwingPaint {
         file.add(saveMenuItem);
         file.add(exitMenuItem);
         
+        JMenu view = new JMenu("View");
+        
+        JCheckBoxMenuItem verticesCheckBox = new JCheckBoxMenuItem("Vertices");
+        verticesCheckBox.setState(true);
+        showVertices = true;
+        verticesCheckBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showVertices = !showVertices;
+				paintablePanel.repaint();
+			}
+		});
+        
+        JCheckBoxMenuItem edgesCheckBox = new JCheckBoxMenuItem("Edges");
+        edgesCheckBox.setState(true);
+        showEdges = true;
+        edgesCheckBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showEdges = !showEdges;
+				paintablePanel.repaint();
+			}
+		});
+        
+        JCheckBoxMenuItem facesCheckBox = new JCheckBoxMenuItem("Faces");
+        facesCheckBox.setState(true);
+        showFaces = true;
+        facesCheckBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showFaces = !showFaces;
+				paintablePanel.repaint();
+			}
+		});
+        
+        view.add(verticesCheckBox);
+        view.add(edgesCheckBox);
+        view.add(facesCheckBox);
+        
         //Add menu to menu bar
         menuBar.add(file);
+        menuBar.add(view);
         
         //Set the JFrame MenuBar to the menu bar created
         frame.setJMenuBar(menuBar);
@@ -209,5 +252,19 @@ public class SwingPaint {
         frame.setVisible(true);
 		
 	}
+
+	public static boolean getShowVertices() {
+		return showVertices;
+	}
+
+	public static boolean getShowEdges() {
+		return showEdges;
+	}
+
+	public static boolean getShowFaces() {
+		return showFaces;
+	}
+	
+	
 
 }
