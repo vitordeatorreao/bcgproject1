@@ -51,6 +51,7 @@ public class PaintablePanel extends JPanel {
 		
 		Scene scene = SceneController.getInstance().getScene();
 		
+		int count = 0;
 		for (Triangle t : scene.getTriangles()) {
 			int[][] vertices = new int[3][2];
 			// ^- the 3 vertices in screen coordinates
@@ -109,6 +110,9 @@ public class PaintablePanel extends JPanel {
 			//Now draw the entire triangle
 			QuickSortVertices qsv = new QuickSortVertices();
 			qsv.sort(vertices);
+			
+			count++;
+			System.out.println("Chegou em "+count+"/"+scene.getTriangles().size());
 			
 			if (vertices[1][1] == vertices[2][1]) {
 				//Case of bottom flat triangle
@@ -227,10 +231,30 @@ public class PaintablePanel extends JPanel {
 		double curx2 = v1[0];
 		
 		for (int scanlineY = v1[1]; scanlineY <= v2[1]; scanlineY++) {
+			//Avoiding calculating for pixels outside the screen
+			if (scanlineY < 0 && v2[1] >= 0) {
+				scanlineY = 0;
+			}
+			if (scanlineY < 0 && v2[1] < 0) {
+				break;
+			}
+			if (scanlineY > getHeight()) {
+				break;
+			}
 			
 			int xMin = Math.min((int) curx1, (int) curx2);
 			int xMax = Math.max((int) curx1, (int) curx2);
 			for (int x = xMin; x <= xMax; x++) {
+				//Avoiding calculating for pixels outside the screen
+				if (x < 0 && xMax >= 0) {
+					x = 0;
+				}
+				if (x < 0 && xMax < 0) {
+					break;
+				}
+				if (x > getWidth()) {
+					break;
+				}
 				drawPixel(g, x, scanlineY, c);
 			}
 			
@@ -261,10 +285,30 @@ public class PaintablePanel extends JPanel {
 		double curx2 = v3[0];
 		
 		for (int scanlineY = v3[1]; scanlineY > v1[1]; scanlineY--) {
+			//Avoiding calculating for pixels outside the screen
+			if (scanlineY > getHeight() && v1[1] <= getHeight()) {
+				scanlineY = getHeight();
+			}
+			if (scanlineY > getHeight() && v1[1] > getHeight()) {
+				break;
+			}
+			if (scanlineY > getHeight()) {
+				break;
+			}
 			
 			int xMin = Math.min((int) curx1, (int) curx2);
 			int xMax = Math.max((int) curx1, (int) curx2);
 			for (int x = xMin; x <= xMax; x++) {
+				//Avoiding calculating for pixels outside the screen
+				if (x < 0 && xMax >= 0) {
+					x = 0;
+				}
+				if (x < 0 && xMax < 0) {
+					break;
+				}
+				if (x > getWidth()) {
+					break;
+				}
 				drawPixel(g, x, scanlineY, c);
 			}
 			
