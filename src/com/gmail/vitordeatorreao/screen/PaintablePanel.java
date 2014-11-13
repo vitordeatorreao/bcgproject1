@@ -237,11 +237,14 @@ public class PaintablePanel extends JPanel {
 		
 		for (int scanlineY = v1[1]; scanlineY <= v2[1]; scanlineY++) {
 			//Avoiding calculating for pixels outside the screen
-			if (scanlineY < 0 && v2[1] >= 0) {
-				scanlineY = 0;
-			}
-			if (scanlineY < 0 && v2[1] < 0) {
+			if (v2[1] < 0) {
 				break;
+			}
+			if (scanlineY < 0) {
+				//Update curx1 and curx2 straight to correct slope
+				curx1 += invslope1 * (0 - scanlineY);
+				curx2 += invslope2 * (0 - scanlineY);
+				scanlineY = 0;
 			}
 			if (scanlineY > getHeight()) {
 				break;
@@ -251,11 +254,11 @@ public class PaintablePanel extends JPanel {
 			int xMax = Math.max((int) curx1, (int) curx2);
 			for (int x = xMin; x <= xMax; x++) {
 				//Avoiding calculating for pixels outside the screen
-				if (x < 0 && xMax >= 0) {
-					x = 0;
-				}
-				if (x < 0 && xMax < 0) {
+				if (xMax < 0) {
 					break;
+				}
+				if (x < 0) {
+					x = 0;
 				}
 				if (x > getWidth()) {
 					break;
@@ -291,13 +294,16 @@ public class PaintablePanel extends JPanel {
 		
 		for (int scanlineY = v3[1]; scanlineY > v1[1]; scanlineY--) {
 			//Avoiding calculating for pixels outside the screen
-			if (scanlineY > getHeight() && v1[1] <= getHeight()) {
-				scanlineY = getHeight();
-			}
-			if (scanlineY > getHeight() && v1[1] > getHeight()) {
+			if (v1[1] > getHeight()) {
 				break;
 			}
 			if (scanlineY > getHeight()) {
+				//Update curx1 and curx2 straight to correct slope
+				curx1 -= invslope1 * (scanlineY - getHeight());
+				curx2 -= invslope2 * (scanlineY - getHeight());
+				scanlineY = getHeight();
+			}
+			if (scanlineY < 0) {
 				break;
 			}
 			
@@ -305,11 +311,11 @@ public class PaintablePanel extends JPanel {
 			int xMax = Math.max((int) curx1, (int) curx2);
 			for (int x = xMin; x <= xMax; x++) {
 				//Avoiding calculating for pixels outside the screen
-				if (x < 0 && xMax >= 0) {
-					x = 0;
-				}
-				if (x < 0 && xMax < 0) {
+				if (xMax < 0) {
 					break;
+				}
+				if (x < 0) {
+					x = 0;
 				}
 				if (x > getWidth()) {
 					break;
