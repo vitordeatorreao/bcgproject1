@@ -168,6 +168,10 @@ public class SwingPaint {
 				int returnVal = saveFile.showSaveDialog(null);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = saveFile.getSelectedFile();
+					if (!file.getName().endsWith(".png") && 
+							!file.getName().endsWith(".PNG")) {
+						file = new File(file.getAbsolutePath()+".png");
+					}
 					BufferedImage im = new BufferedImage(
 							paintablePanel.getWidth(), 
 							paintablePanel.getHeight(), 

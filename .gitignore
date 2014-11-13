@@ -1,5 +1,6 @@
 #ignore compiled files
 bin/
+/*.jar
 
 #ignore documentation
 doc/
@@ -10,3 +11,6 @@ doc/
 #ignore image files
 /*.png
 /*.xcf
+
+#ignore zipped files
+/*.7z
