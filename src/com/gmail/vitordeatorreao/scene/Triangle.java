@@ -1,5 +1,8 @@
 package com.gmail.vitordeatorreao.scene;
 
+import com.gmail.vitordeatorreao.math.Vector;
+import com.gmail.vitordeatorreao.math.Vertex;
+
 /**
  * This class implements a
  * <a href="http://en.wikipedia.org/wiki/Triangle">Triangle</a>.
@@ -20,6 +23,9 @@ public class Triangle {
 	
 	private Edge[] edges;
 	private String label;
+	private Vector normal;
+	private Vertex[] vertices;
+	private Vertex centroid;
 	
 	/**
 	 * Constructor of <code>Triangle</code> class. A Triangle object is defined
@@ -33,6 +39,9 @@ public class Triangle {
 		this.edges[0] = e1;
 		this.edges[1] = e2;
 		this.edges[2] = e3;
+		this.setVertices();
+		this.calculateNormal();
+		this.calculateCentroid();
 	}
 	
 	/**
@@ -50,6 +59,46 @@ public class Triangle {
 		this.edges[1] = e2;
 		this.edges[2] = e3;
 		this.label = label;
+		this.setVertices();
+		this.calculateNormal();
+		this.calculateCentroid();
+	}
+	
+	/**
+	 * Calculates this <code>Triangle</code>'s centriod.
+	 */
+	private void calculateCentroid() {
+		double[] coords = new double[3];
+		coords[0] =	(this.vertices[0].getCoord(0)+
+					 this.vertices[1].getCoord(0)+
+					 this.vertices[2].getCoord(0))/3.0;
+		coords[1] = (this.vertices[0].getCoord(1)+
+				 	 this.vertices[1].getCoord(1)+
+				 	 this.vertices[2].getCoord(1))/3.0;
+		coords[2] = (this.vertices[0].getCoord(2)+
+			 	 	 this.vertices[1].getCoord(2)+
+			 	 	 this.vertices[2].getCoord(2))/3.0;
+		this.centroid = new Vertex(coords);
+	}
+	
+	/**
+	 * Sets the vertices array attribute to the list of vertices of this 
+	 * <code>Triangle</code>
+	 */
+	private void setVertices() {
+		this.vertices = new Vertex[3];
+		this.vertices[0] = this.edges[0].get(0);
+		this.vertices[1] = this.edges[1].get(0);
+		this.vertices[2] = this.edges[2].get(0);
+	}
+	
+	/**
+	 * Calculates the normal of this <code>Triangle</code>.
+	 */
+	private void calculateNormal() {
+		Vector v1 = this.vertices[1].subtract(this.vertices[0]);
+		Vector v2 = this.vertices[2].subtract(this.vertices[0]);
+		this.normal = v1.vectorProduct(v2).normalize();
 	}
 	
 	/**
@@ -67,6 +116,40 @@ public class Triangle {
 	 */
 	public String getLabel() {
 		return label == null ? "" : label;
+	}
+
+	/**
+	 * Returns the normal of this <code>Triangle</code> instance.
+	 * @return The normal of this <code>Triangle</code>
+	 */
+	public Vector getNormal() {
+		return normal;
+	}
+
+	/**
+	 * Returns the list of vertices of this <code>Triangle</code>.
+	 * @return The three vertices of this <code>Triangle</code>
+	 */
+	public Vertex[] getVertices() {
+		return vertices;
+	}
+	
+	/**
+	 * Returns the <code>Vertex</code> at the specified index.<br />
+	 * There is no guaranteed order between the vertices.
+	 * @param index The index of the <code>Vertex</code> to be returned
+	 * @return Vertex The <code>Vertex</code> at the specified index
+	 */
+	public Vertex getVertex(int index) {
+		return this.vertices[index];
+	}
+	
+	/**
+	 * Returns this <code>Triangle</code>'s centroid.
+	 * @return The centroid
+	 */
+	public Vertex getCentroid() {
+		return centroid;
 	}
 
 	/**

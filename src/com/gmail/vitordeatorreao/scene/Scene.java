@@ -1,6 +1,7 @@
 package com.gmail.vitordeatorreao.scene;
 
 import java.util.ArrayList;
+import com.gmail.vitordeatorreao.utils.QuickSortTriangles;
 
 /**
  * This class implements a Scene.
@@ -90,6 +91,14 @@ public class Scene {
 	 */
 	public void cleanTriangles() {
 		this.triangles = new ArrayList<Triangle>();
+	}
+	
+	/**
+	 * Sorts the list of triangles by their centroids.
+	 */
+	public void sortTriangles() {
+		QuickSortTriangles qst = new QuickSortTriangles();
+		qst.sort(triangles);
 	}
 	
 	@Override

@@ -145,6 +145,7 @@ public class SceneController {
 					}
 					this.scene.addTriangle(new Triangle(es[0], es[1], es[2]));
 				}
+				this.scene.sortTriangles();
 			} else if (args.length == 3){
 				//Reading camera
 				double[] ds = new double[3];
@@ -247,6 +248,19 @@ public class SceneController {
 			}
 		}
 		bfr.close();
+	}
+	
+	/**
+	 * Calculates the distance between the <code>Triangle</code>'s 
+	 * centroid to the camera's focus.
+	 * @param t1 The <code>Triangle</code>
+	 * @return double The distance
+	 */
+	public static double d(Triangle t1) {
+		Vector v = t1.getCentroid().subtract(
+				getInstance().getScene().getCamera().getFocus()
+		);
+		return v.getNorm();
 	}
 	
 	/**
