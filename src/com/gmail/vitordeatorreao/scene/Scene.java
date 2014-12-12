@@ -21,6 +21,7 @@ public class Scene {
 	
 	private Camera camera;
 	private ArrayList<Triangle> triangles;
+	private Light light;
 	
 	/**
 	 * Instantiates an empty <code>Scene</code>. 
@@ -76,6 +77,14 @@ public class Scene {
 	 */
 	public Camera getCamera() {
 		return camera;
+	}
+
+	public Light getLight() {
+		return light;
+	}
+
+	public void setLight(Light light) {
+		this.light = light;
 	}
 
 	/**

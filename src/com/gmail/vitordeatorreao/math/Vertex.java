@@ -1,5 +1,7 @@
 package com.gmail.vitordeatorreao.math;
 
+import com.gmail.vitordeatorreao.scene.Triangle;
+
 /**
  * This class implements 
  * <a href="http://en.wikipedia.org/wiki/Vertex_%28geometry%29">Vertex</a> 
@@ -18,7 +20,7 @@ package com.gmail.vitordeatorreao.math;
 public class Vertex {
 	
 	private double[] coords;
-	
+	private Vector normal;
 	private String label;
 	
 	/**
@@ -82,6 +84,25 @@ public class Vertex {
 	}
 	
 	/**
+	 * Sets the normal for this <code>Vertex</code>
+	 * @param vector	The <code>Vector</code> representing this
+	 * 					<code>Vertex</code>'s normal
+	 */
+	public void setNormal(Vector vector) {
+		this.normal = vector;
+	}
+	
+	/**
+	 * Returns a <code>Vector</code> representing the normal 
+	 * of this <code>Vertex</code>. Might return <code>null</code>
+	 * in case it hasn't been calculated yet.
+	 * @return The normal of this <code>Vertex</code>
+	 */	
+	public Vector getNormal() {
+		return this.normal;
+	}
+	
+	/**
 	 * Returns the <code>Vector</code> between another instance of 
 	 * <code>Vertex</code> and this one.
 	 * @param v another <code>Vertex</code> instance
@@ -111,6 +132,23 @@ public class Vertex {
 	public BarycentricCoordinate getBaricentricCoordinate(
 			Vertex vA, Vertex vB, Vertex vC) {
 		return new BarycentricCoordinate(this, vA, vB, vC);
+	}
+	
+	/**
+	 * Returns true if this <code>Vertex</code> is part of 
+	 * a given <code>Triangle</code>
+	 * @param t The <code>Triangle</code> that might 
+	 * 			contain the <code>Vertex</code> 
+	 * @return true If the <code>Vertex</code> composes 
+	 * 				the <code>Triangle</code>
+	 */
+	public boolean in(Triangle t) {
+		for (Vertex v : t.getVertices()) {
+			if (this.equals(v)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
