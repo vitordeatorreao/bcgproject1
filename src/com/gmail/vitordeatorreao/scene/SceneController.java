@@ -252,7 +252,7 @@ public class SceneController {
 	
 	/**
 	 * Calculates the distance between the <code>Triangle</code>'s 
-	 * centroid to the camera's focus.
+	 * centroid and the camera's focus.
 	 * @param t1 The <code>Triangle</code>
 	 * @return double The distance
 	 */
@@ -261,6 +261,19 @@ public class SceneController {
 				getInstance().getScene().getCamera().getFocus()
 		);
 		return v.getNorm();
+	}
+
+	/**
+	 * Calculates the distance between the <code>Vertex</code> 
+	 * and the camera's focus.
+	 * @param t1 The <code>Triangle</code>
+	 * @return double The distance
+	 */
+	public static double d(Vertex v) {
+		Vector vct = v.subtract(
+				getInstance().getScene().getCamera().getFocus()
+		);
+		return vct.getNorm();
 	}
 	
 	/**

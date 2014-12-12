@@ -6,8 +6,10 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.gmail.vitordeatorreao.math.BarycentricCoordinate;
 import com.gmail.vitordeatorreao.math.Vector;
 import com.gmail.vitordeatorreao.math.Vertex;
+import com.gmail.vitordeatorreao.scene.Camera;
 import com.gmail.vitordeatorreao.scene.Scene;
 import com.gmail.vitordeatorreao.scene.SceneController;
 import com.gmail.vitordeatorreao.scene.Triangle;
@@ -32,6 +34,10 @@ public class PaintablePanel extends JPanel {
 
 	private static final long serialVersionUID = 1025412576844168978L;
 	
+	private Triangle curTriangle;
+	private Vertex[] curVertices2D;
+	private ZBuffer zBuffer;
+	
 	/**
 	 * Creates a new <code>PaintablePanel</code> instance.
 	 * By default, the background is black.
@@ -51,7 +57,10 @@ public class PaintablePanel extends JPanel {
 		
 		Scene scene = SceneController.getInstance().getScene();
 		
+		zBuffer = new ZBuffer(getWidth(), getHeight());
+		
 		for (Triangle t : scene.getTriangles()) {
+			curTriangle = t;
 			int[][] vertices = new int[3][2];
 			// ^- the 3 vertices in screen coordinates
 			
@@ -115,6 +124,19 @@ public class PaintablePanel extends JPanel {
 			
 			if (SwingPaint.getShowFaces()) {
 				//Now draw the entire triangle
+				//This is necessary to the ZBuffer calculation
+				curVertices2D = new Vertex[3];
+				
+				curVertices2D[0] = new Vertex(
+						new double[] {vertices[0][0], vertices[0][1]}
+				);
+				curVertices2D[1] = new Vertex(
+						new double[] {vertices[1][0], vertices[1][1]}
+				);
+				curVertices2D[2] = new Vertex(
+						new double[] {vertices[2][0], vertices[2][1]}
+				);
+				
 				QuickSortVertices qsv = new QuickSortVertices();
 				qsv.sort(vertices);
 								
@@ -152,6 +174,13 @@ public class PaintablePanel extends JPanel {
 			
 		}
 		
+		//Paint ZBuffer
+		for (int i = 0; i < getWidth(); i++) {
+			for (int j = 0; j < getHeight(); j++) {
+				Color c = zBuffer.getColor(i, j);
+				drawPixel(g, i, j, c);
+			}
+		}
 	}
 
 	/**
@@ -263,7 +292,7 @@ public class PaintablePanel extends JPanel {
 				if (x > getWidth()) {
 					break;
 				}
-				drawPixel(g, x, scanlineY, c);
+				calcZBuffer(x, scanlineY);
 			}
 			
 			curx1 += invslope1;
@@ -320,7 +349,7 @@ public class PaintablePanel extends JPanel {
 				if (x > getWidth()) {
 					break;
 				}
-				drawPixel(g, x, scanlineY, c);
+				calcZBuffer(x, scanlineY);
 			}
 			
 			curx1 -= invslope1;
@@ -344,6 +373,51 @@ public class PaintablePanel extends JPanel {
 		} else {
 			return 0;
 		}
+	}
+	
+	private void calcZBuffer(int x, int y) {
+		Camera camera = SceneController.getInstance().getScene().getCamera();
+		
+		Vertex v = new Vertex(
+				new double[] {x, y}
+		);
+		BarycentricCoordinate bc;
+		/* It might happen that a triangle be projected into a straight line
+		 * in screen coordinates. If so, it is impossible to calculate the
+		 * Barycentric Coordinates, because they are collinear.
+		 * In that case, ignore this one.
+		 */
+		try {
+			bc = new BarycentricCoordinate(
+					v, curVertices2D[0], curVertices2D[1], curVertices2D[2]
+			);
+		} catch(IllegalArgumentException e) {
+			return;
+		}
+		double[] pCoords = new double[3];
+		pCoords[0] = 
+				bc.getCoord(0)*curTriangle.getVertex(0).getCoord(0)+
+				bc.getCoord(1)*curTriangle.getVertex(1).getCoord(0)+
+				bc.getCoord(2)*curTriangle.getVertex(2).getCoord(0);
+		pCoords[1] = 
+				bc.getCoord(0)*curTriangle.getVertex(0).getCoord(1)+
+				bc.getCoord(1)*curTriangle.getVertex(1).getCoord(1)+
+				bc.getCoord(2)*curTriangle.getVertex(2).getCoord(1);
+		pCoords[2] = 
+				bc.getCoord(0)*curTriangle.getVertex(0).getCoord(2)+
+				bc.getCoord(1)*curTriangle.getVertex(1).getCoord(2)+
+				bc.getCoord(2)*curTriangle.getVertex(2).getCoord(2);
+		Vertex originalP = new Vertex(pCoords);
+		
+		Vector vct = originalP.subtract(camera.getFocus());
+		double deepness = vct.getNorm();
+		
+		if (deepness < zBuffer.getDeepness(x, y)) {
+			//Calculate color and update zBuffer
+			Color c = Color.white;
+			zBuffer.set(x, y, c, deepness);
+		}
+				
 	}
 
 }
