@@ -79,7 +79,7 @@ public class Light {
 		return iAmb;
 	}
 
-	public Color getiLocal() {
+	public Color getiL() {
 		return iL;
 	}
 

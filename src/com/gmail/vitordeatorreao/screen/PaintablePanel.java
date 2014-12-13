@@ -10,6 +10,7 @@ import com.gmail.vitordeatorreao.math.BarycentricCoordinate;
 import com.gmail.vitordeatorreao.math.Vector;
 import com.gmail.vitordeatorreao.math.Vertex;
 import com.gmail.vitordeatorreao.scene.Camera;
+import com.gmail.vitordeatorreao.scene.Light;
 import com.gmail.vitordeatorreao.scene.Scene;
 import com.gmail.vitordeatorreao.scene.SceneController;
 import com.gmail.vitordeatorreao.scene.Triangle;
@@ -414,10 +415,99 @@ public class PaintablePanel extends JPanel {
 		
 		if (deepness < zBuffer.getDeepness(x, y)) {
 			//Calculate color and update zBuffer
-			Color c = Color.white;
+			Light light = SceneController.getInstance().getScene().getLight();
+			Color c;
+			if (light == null) {
+				c = Color.black;
+			} else {
+				double alpha = bc.getCoord(0);
+				double beta = bc.getCoord(1);
+				double gama = bc.getCoord(2);
+				
+				Vector N1 = curTriangle.getVertex(0).getNormal();
+				Vector N2 = curTriangle.getVertex(1).getNormal();
+				Vector N3 = curTriangle.getVertex(2).getNormal();
+				
+				Vector N = N1.mult(alpha)
+						.add(N2.mult(beta))
+						.add(N3.mult(gama));
+				
+				N = N.normalize();
+				
+				Vector V = camera.getFocus().subtract(originalP);
+				V = V.normalize();
+				
+				Vector L = light.getpL().subtract(originalP);
+				L = L.normalize();
+				
+				double aux = 2.0 * N.scalarMult(L);
+				Vector R = (N.sub(L)).mult(aux);
+				
+				boolean noSpecular = false;
+				boolean noDiffuse = false;
+				
+				//Special Cases
+				if (N.scalarMult(L) < 0.0) {
+					if (V.scalarMult(N) < 0.0) {
+						N = N.mult(-1.0);
+					} else {
+						noDiffuse = true;
+						noSpecular = true;
+					}
+				}
+				
+				if (V.scalarMult(R) < 0.0) {
+					noSpecular = true;
+				}
+				
+				double[] Is = new double[] {0.0, 0.0, 0.0};
+				if (!noSpecular) {
+					double m =	Math.pow(R.scalarMult(V), light.getN()) *
+								light.getkS();
+					Is[0] = m*light.getiL().getRed();
+					Is[1] = m*light.getiL().getGreen();
+					Is[2] = m*light.getiL().getBlue();
+				}
+				double[] Id = new double[] {0.0, 0.0, 0.0};
+				if (!noDiffuse) {
+					Vector M = light.getkD().mult(N.scalarMult(L));
+					
+					Id[0] = M.get(0) *
+							light.getoD().get(0) *
+							light.getiL().getRed();
+					Id[1] = M.get(1) *
+							light.getoD().get(1) *
+							light.getiL().getGreen();
+					Id[2] = M.get(2) *
+							light.getoD().get(2) *
+							light.getiL().getBlue();	
+				}
+				double[] Ia = new double[3];
+				Ia[0] = light.getkA()*light.getiAmb().getRed();
+				Ia[1] = light.getkA()*light.getiAmb().getGreen();
+				Ia[2] = light.getkA()*light.getiAmb().getBlue();
+				
+				int[] I = new int[3];
+				I[0] = roundToColor(Math.round(Ia[0] + Is[0] + Id[0]));
+				I[1] = roundToColor(Math.round(Ia[1] + Is[1] + Id[1]));
+				I[2] = roundToColor(Math.round(Ia[2] + Is[2] + Id[2]));
+				
+				c = new Color(I[0], I[1], I[2]);
+				
+			}
 			zBuffer.set(x, y, c, deepness);
 		}
 				
+	}
+	
+	private int roundToColor(long l) {
+		if (l > 255) {
+			return 255;
+		} else if (l < 0) {
+			return 0;
+		} else {
+			return new Long(l).intValue();
+		}
 	}
 
 }

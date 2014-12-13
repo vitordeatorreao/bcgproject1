@@ -9,7 +9,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -207,48 +206,52 @@ public class SwingPaint {
         file.add(saveMenuItem);
         file.add(exitMenuItem);
         
-        JMenu view = new JMenu("View");
+        /*
+         * After I added Rendering, I saw no more need for this View menu 
+         */
         
-        JCheckBoxMenuItem verticesCheckBox = new JCheckBoxMenuItem("Vertices");
-        verticesCheckBox.setState(true);
+//        JMenu view = new JMenu("View");
+//        
+//        JCheckBoxMenuItem verticesCheckBox = new JCheckBoxMenuItem("Vertices");
+//        verticesCheckBox.setState(true);
         showVertices = true;
-        verticesCheckBox.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showVertices = !showVertices;
-				paintablePanel.repaint();
-			}
-		});
+//        verticesCheckBox.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				showVertices = !showVertices;
+//				paintablePanel.repaint();
+//			}
+//		});
         
-        JCheckBoxMenuItem edgesCheckBox = new JCheckBoxMenuItem("Edges");
-        edgesCheckBox.setState(true);
+//        JCheckBoxMenuItem edgesCheckBox = new JCheckBoxMenuItem("Edges");
+//        edgesCheckBox.setState(true);
         showEdges = true;
-        edgesCheckBox.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showEdges = !showEdges;
-				paintablePanel.repaint();
-			}
-		});
+//        edgesCheckBox.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				showEdges = !showEdges;
+//				paintablePanel.repaint();
+//			}
+//		});
         
-        JCheckBoxMenuItem facesCheckBox = new JCheckBoxMenuItem("Faces");
-        facesCheckBox.setState(true);
+//        JCheckBoxMenuItem facesCheckBox = new JCheckBoxMenuItem("Faces");
+//        facesCheckBox.setState(true);
         showFaces = true;
-        facesCheckBox.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showFaces = !showFaces;
-				paintablePanel.repaint();
-			}
-		});
+//        facesCheckBox.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				showFaces = !showFaces;
+//				paintablePanel.repaint();
+//			}
+//		});
         
-        view.add(verticesCheckBox);
-        view.add(edgesCheckBox);
-        view.add(facesCheckBox);
+//        view.add(verticesCheckBox);
+//        view.add(edgesCheckBox);
+//        view.add(facesCheckBox);
         
         //Add menu to menu bar
         menuBar.add(file);
-        menuBar.add(view);
+//        menuBar.add(view);
         
         //Set the JFrame MenuBar to the menu bar created
         frame.setJMenuBar(menuBar);
