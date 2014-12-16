@@ -410,7 +410,7 @@ public class PaintablePanel extends JPanel {
 				bc.getCoord(2)*curTriangle.getVertex(2).getCoord(2);
 		Vertex originalP = new Vertex(pCoords);
 		
-		Vector vct = originalP.subtract(camera.getFocus());
+		Vector vct = camera.getFocus().subtract(originalP);
 		double deepness = vct.getNorm();
 		
 		if (deepness < zBuffer.getDeepness(x, y)) {
@@ -441,7 +441,7 @@ public class PaintablePanel extends JPanel {
 				L = L.normalize();
 				
 				double aux = 2.0 * N.scalarMult(L);
-				Vector R = (N.sub(L)).mult(aux);
+				Vector R = (N.mult(aux)).sub(L);
 				
 				boolean noSpecular = false;
 				boolean noDiffuse = false;
